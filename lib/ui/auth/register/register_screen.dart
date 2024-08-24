@@ -1,8 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo_c11_thursday/core/utils/email_validation.dart';
-import 'package:todo_c11_thursday/core/utils/image_utils.dart';
 import 'package:todo_c11_thursday/ui/widgets/custom_text_form_field.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -11,7 +10,7 @@ class RegisterScreen extends StatelessWidget {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController passwordConfirmationController =
-      TextEditingController();
+  TextEditingController();
 
   var formKey = GlobalKey<FormState>();
 
@@ -77,7 +76,13 @@ class RegisterScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                Text('E-mail', style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w400),),
+                Text(
+                  'E-mail',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400),
+                ),
 
                 CustomTextFormField(
                   controller: emailController,
@@ -93,7 +98,13 @@ class RegisterScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                Text('Password', style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w400),),
+                Text(
+                  'Password',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400),
+                ),
 
                 CustomTextFormField(
                   controller: passwordController,
@@ -110,7 +121,13 @@ class RegisterScreen extends StatelessWidget {
                     return null;
                   },
                 ),
-                Text('Confirm Password', style: TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.w400),),
+                Text(
+                  'Confirm Password',
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400),
+                ),
 
                 CustomTextFormField(
                   controller: passwordConfirmationController,
@@ -132,7 +149,9 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      register();
+                      register(
+                          email: emailController.text,
+                          password: passwordController.text);
                     },
                     child: Text('Register'))
               ],
@@ -143,11 +162,23 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
-  void register() {
+  void register({required String email, required String password}) async {
     if (formKey.currentState?.validate() == false) {
       return;
     }
 
     // create account
+
+    try {
+      var userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      print('USer ID is ${userCredential.user?.uid}');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    }
   }
 }

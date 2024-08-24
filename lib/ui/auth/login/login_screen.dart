@@ -1,8 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo_c11_thursday/core/utils/email_validation.dart';
-import 'package:todo_c11_thursday/core/utils/image_utils.dart';
 import 'package:todo_c11_thursday/ui/widgets/custom_text_form_field.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -75,7 +74,9 @@ class LoginScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      register();
+                      login(
+                          email: emailController.text,
+                          password: passwordController.text);
                     },
                     child: Text('Login'))
               ],
@@ -86,11 +87,23 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void register() {
+  void login({required String email, required String password}) async {
     if (formKey.currentState?.validate() == false) {
       return;
     }
 
-    // create account
+    // authenticate
+
+    try {
+      var userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      print('User Id is: ${userCredential.user?.uid}');
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found' ||
+          e.code == 'wrong-password' ||
+          e.code == 'invalid-credential') {
+        print('Wrong email or password');
+      }
+    }
   }
 }
