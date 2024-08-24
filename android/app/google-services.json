@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "961303538348",
+    "project_id": "tasks-app-c11-thursday",
+    "storage_bucket": "tasks-app-c11-thursday.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961303538348:android:50ddc0d6c995858dbf4d09",
+        "android_client_info": {
+          "package_name": "com.example.todo_c11_thursday"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD-FhxPgXZoG9T4ROGJXikGlBTWgTkM-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
