@@ -1,16 +1,27 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:todo_c11_thursday/core/app_routes.dart';
+import 'package:todo_c11_thursday/core/utils/dialog_utils.dart';
 import 'package:todo_c11_thursday/core/utils/email_validation.dart';
 import 'package:todo_c11_thursday/ui/widgets/custom_text_form_field.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController fullNameController = TextEditingController();
+
   TextEditingController userNameController = TextEditingController();
+
   TextEditingController emailController = TextEditingController();
+
   TextEditingController passwordController = TextEditingController();
+
   TextEditingController passwordConfirmationController =
-  TextEditingController();
+      TextEditingController();
 
   var formKey = GlobalKey<FormState>();
 
@@ -153,7 +164,29 @@ class RegisterScreen extends StatelessWidget {
                           email: emailController.text,
                           password: passwordController.text);
                     },
-                    child: Text('Register'))
+                    child: Text('Register')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Already have account",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                            context, AppRoutes.loginRoute);
+                      },
+                      child: Text(
+                        'Sign-in',
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                            decoration: TextDecoration.underline),
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),
@@ -170,14 +203,24 @@ class RegisterScreen extends StatelessWidget {
     // create account
 
     try {
+      DialogUtils.showLoadingDialog(context, 'Creating Account...');
       var userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      print('USer ID is ${userCredential.user?.uid}');
+      DialogUtils.hideDialog(context);
+      DialogUtils.showMessageDialog(context, 'User Registered Successfully',
+          posActionTitle: 'login', posAction: () {
+        Navigator.pushReplacementNamed(context, AppRoutes.loginRoute);
+      });
     } on FirebaseAuthException catch (e) {
+      DialogUtils.hideDialog(context);
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        DialogUtils.showMessageDialog(
+            context, 'The password provided is too weak.',
+            posActionTitle: 'Try again');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        DialogUtils.showMessageDialog(context,
+            'The account already exists for that email, try another account.',
+            posActionTitle: 'Ok');
       }
     }
   }
